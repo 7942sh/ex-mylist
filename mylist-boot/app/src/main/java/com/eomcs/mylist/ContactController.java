@@ -1,100 +1,64 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-  <meta charset="utf-8">
-  <title>연락처</title>
-</head>
-<body>
+package com.eomcs.mylist;
 
-<h1>연락처 상세</h1>
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-<form>
-이메일*: <input id="x-email" type="text" readonly><br>
-이름*: <input id="x-name" type="text"><br>
-전화*: <input id="x-tel" type="text"><br>
-회사: <input id="x-company" type="text"><br>
-별표(*) 항목은 필수 입력입니다.<br>
-<button id="x-update-btn" type="button">변경</button>
-<button id="x-delete-btn" type="button">삭제</button>
-<button id="x-cancel-btn" type="button">취소</button>
-</form>
+@RestController
+public class ContactController {
 
-<script type="text/javascript">
+  String[] contacts = new String[5];
+  int size = 0;
 
-  // 1) URL에서 쿼리스트링(query string)을 추출한다.
-  var arr = location.href.split("?");
-  console.log(arr);
-
-  if (arr.length == 1) {
-    alert("요청 형식이 옳바르지 않습니다.")
-    throw "URL 형식 오류!";
+  @RequestMapping("/contact/list")
+  public Object list() {
+    String[] arr = new String[size];
+    for (int i = 0; i < size; i++) {
+      arr[i] = contacts[i];
+    }
+    return arr;
   }
 
-  var qs = arr[1];
-  console.log(qs);
-
-  // 2) 쿼리 스트링에서 email 값을 추출한다.
-  var params = new URLSearchParams(qs);
-  var email = params.get("email");
-
-  if (email == null) {
-    alert("이메일 값이 없습니다.");
-    throw "파라미터 오류!";
+  @RequestMapping("/contact/add")
+  public Object add(String name, String email, String tel, String company) {
+    String contact = name + "," + email + "," + tel + "," + company;
+    contacts[size++] = contact;
+    return size;
   }
-  console.log(email);
 
-  var xName = document.querySelector("#x-name");
-  var xEmail = document.querySelector("#x-email");
-  var xTel = document.querySelector("#x-tel");
-  var xCompany = document.querySelector("#x-company");
+  @RequestMapping("/contact/get")
+  public Object get(String email) {
+    for (int i = 0; i < size; i++) {
+      if (contacts[i].split(",")[1].equals(email)) { // 예) "u1@test.com"
+        return contacts[i];
+      }
+    }
+    return "";
+  }
 
-  // 3) 서버에서 데이터 가져오기
-  fetch(`/contact/get?email=${email}`)
-    .then(function(response) {
-      return response.text();
-    })
-    .then(function(contact) {
-      var values = contact.split(",");
-
-      // 4) 연락처 상세 정보를 화면에 출력한다.
-      xName.value = values[0];
-      xEmail.value = values[1];
-      xTel.value = values[2];
-      xCompany.value = values[3];
-    });
-
-  document.querySelector("#x-update-btn").onclick = function() {
-    if (xName.value == "" || xTel.value == "") {
-      window.alert("필수 입력 항목이 비어 있습니다.");
-      return;
+  @RequestMapping("/contact/update")
+  public Object update(String name, String email, String tel, String company) {
+    String contact = name + "," + email + "," + tel + "," + company;
+    for (int i = 0; i < size; i++) {
+      if (contacts[i].split(",")[1].equals(email)) {
+        contacts[i] = contact;
+        return 1;
+      }
     }
 
-    fetch(`/contact/update?name=${xName.value}&email=${xEmail.value}&tel=${xTel.value}&company=${xCompany.value}`)
-      .then(function(response) {
-        return response.text();
-      })
-      .then(function(text) {
-        console.log(text);
-        location.href = "index.html";
-      });
-  };
+    return 0;
+  }
 
-  document.querySelector("#x-cancel-btn").onclick = function() {
-    window.location.href = "index.html";
-  };
-
-  document.querySelector("#x-delete-btn").onclick = function() {
-    fetch(`/contact/delete?email=${email}`)
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(result) {
-        console.log(result);
-        location.href = "index.html";
-      });
-  };
-
-</script>
-
-</body>
-</html>
+  @RequestMapping("/contact/delete")
+  public Object delete(String email) {
+    for (int i = 0; i < size; i++) {
+      if (contacts[i].split(",")[1].equals(email)) {
+        for (int j = i + 1; j < size; j++) {
+          contacts[j - 1] = contacts[j];
+        }
+        size--;
+        return 1;
+      }
+    }
+    return 0;
+  }
+}
