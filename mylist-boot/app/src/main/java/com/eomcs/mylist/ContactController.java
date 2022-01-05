@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ContactController {
 
-  String[] contacts = new String[5];
+  Contact[] contacts = new Contact[5];
   int size = 0;
+
 
   @RequestMapping("/contact/list")
   public Object list() {
-    String[] arr = new String[size];
+    Contact[] arr = new Contact[size];
     for (int i = 0; i < size; i++) {
       arr[i] = contacts[i];
     }
@@ -19,13 +20,18 @@ public class ContactController {
   }
 
   @RequestMapping("/contact/add")
-  public Object add(String name, String email, String tel, String company) {
-    if (size == contacts.length) { 
+  public Object add(Contact contact) {
+    System.out.println(contact);
+
+    if (size == contacts.length) {
       contacts = grow();
     }
-    contacts[size++] = createCSV(name, email, tel, company);
+
+    contacts[size++] = contact;
+
     return size;
   }
+
 
   @RequestMapping("/contact/get")
   public Object get(String email) {
@@ -38,13 +44,13 @@ public class ContactController {
   }
 
   @RequestMapping("/contact/update")
-  public Object update(String name, String email, String tel, String company) {
-    int index = indexOf(email);
+  public Object update(Contact contact) {
+    int index = indexOf(contact.email);
     if (index == -1) {
       return 0;
     }
 
-    contacts[index] = createCSV(name, email, tel, company);
+    contacts[index] = contact;
     return 1;
   }
 
@@ -59,21 +65,18 @@ public class ContactController {
     return 1;
   }
 
-  String createCSV(String name, String email, String tel, String company) {
-    return name + "," + email + "," + tel + "," + company;
-  }
-
   int indexOf(String email) {
     for (int i = 0; i < size; i++) {
-      if (contacts[i].split(",")[1].equals(email)) {
+      Contact contact = contacts[i];
+      if (contact.email.equals(email)) {
         return i;
       }
     }
     return -1;
   }
 
-  String remove(int index) {
-    String old = contacts[index];
+  Contact remove(int index) {
+    Contact old = contacts[index];
     for (int i = index + 1; i < size; i++) {
       contacts[i - 1] = contacts[i];
     }
@@ -81,17 +84,19 @@ public class ContactController {
     return old;
   }
 
-  String[] grow() {
-    String[] arr = new String[newLength()];
+  Contact[] grow() {
+    Contact[] arr = new Contact[newLength()];
     copy(contacts, arr);
     return arr;
   }
+
 
   int newLength() {
     return contacts.length + (contacts.length >> 1);
   }
 
-  void copy(String[] source, String[] target) {
+
+  void copy(Contact[] source, Contact[] target) {
     int length = source.length;
     if (target.length < source.length) {
       length = target.length;
@@ -100,4 +105,5 @@ public class ContactController {
       target[i] = source[i];
     }
   }
+
 }
