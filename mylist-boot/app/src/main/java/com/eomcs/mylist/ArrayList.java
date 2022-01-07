@@ -60,7 +60,7 @@ public class ArrayList {
   }
 
   static Contact set(int index, Contact contact) {
-    if (index < 0 || index >= size) { // 값이 저장된 위치가 무효한 인덱스라면
+    if (index < 0 || index >= size) {
       return null;
     }
     Contact old = contacts[index];
