@@ -1,6 +1,6 @@
 package com.eomcs.mylist;
 
-public class ArrayList {
+public class ArrayList2 {
 
   static Object[] list = new Object[5];
   static int size = 0;
@@ -50,7 +50,7 @@ public class ArrayList {
   }
 
   static Object set(int index, Object obj) {
-    if (index < 0 || index >= size) {
+    if (index < 0 || index >= size) { // 값이 저장된 위치가 무효한 인덱스라면
       return null;
     }
     Object old = list[index];
