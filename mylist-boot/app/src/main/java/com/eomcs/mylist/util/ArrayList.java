@@ -1,11 +1,11 @@
-package com.eomcs.mylist;
+package com.eomcs.util;
 
 public class ArrayList {
 
   Object[] list = new Object[5];
   int size = 0;
 
-  void add(Object obj) {
+  public void add(Object obj) {
     if (this.size == this.list.length) {
       this.list = this.grow();
     }
@@ -32,7 +32,7 @@ public class ArrayList {
     }
   }
 
-  Object[] toArray() {
+  public Object[] toArray() {
     Object[] arr = new Object[this.size];
     for (int i = 0; i < this.size; i++) {
       arr[i] = this.list[i];
@@ -40,7 +40,7 @@ public class ArrayList {
     return arr;
   }
 
-  Object remove(int index) {
+  public Object remove(int index) {
     if (index < 0 || index >= this.size) {
       return null;
     }
@@ -52,12 +52,21 @@ public class ArrayList {
     return old;
   }
 
-  Object set(int index, Object obj) {
-    if (index < 0 || index >= this.size) {
+  public Object set(int index, Object obj) {
+    if (index < 0 || index >= this.size) { 
       return null;
     }
     Object old = this.list[index];
     this.list[index] = obj;
     return old;
   }
+
+  public int size() {
+    return this.size;
+  }
+
+  public Object get(int index) {
+    return this.list[index];
+  }
+
 }
