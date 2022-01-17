@@ -1,14 +1,44 @@
 package com.eomcs.mylist.controller;
 
+import java.io.FileReader;
+import java.io.FileWriter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eomcs.mylist.domain.Contact;
 import com.eomcs.util.ArrayList;
 
+//1) 생성자에서 FileReader 객체를 준비한다.
+//2) 파일에서 문자를 읽어 출력한다.
+//3) 파일을 더이상 읽을 수 없으면 반복문을 종료한다.
+//4) 파일에서 읽은 문자를 버퍼에 담았다가 줄바꿈 코드를 만나면 출력한다. 
+
 @RestController
 public class ContactController {
 
-  ArrayList contactList = new ArrayList();
+  ArrayList contactList;
+
+  public ContactController() throws Exception {
+    contactList = new ArrayList();
+    System.out.println("ContactController() 호출됨!");
+
+    FileReader in = new FileReader("contacts.csv");
+
+    StringBuilder buf = new StringBuilder();
+    int c;
+    while (true) {
+      c = in.read();
+      if (c == -1)
+        break;
+
+      if (c == '\n') {
+        System.out.println("===> " + buf.toString());
+      } else {
+        buf.append((char) c);
+      }
+    }
+
+    in.close();
+  }
 
   @RequestMapping("/contact/list")
   public Object list() {
@@ -50,6 +80,20 @@ public class ContactController {
 
     contactList.remove(index);
     return 1;
+  }
+
+  @RequestMapping("/contact/save")
+  public Object save() throws Exception {
+    FileWriter out = new FileWriter("contacts.csv"); // 따로 경로를 지정하지 않으면 파일은 프로젝트 폴더에 생성된다.
+
+    Object[] arr = contactList.toArray();
+    for (Object obj : arr) {
+      Contact contact = (Contact) obj;
+      out.write(contact.toCsvString() + "\n");
+    }
+
+    out.close();
+    return 0;
   }
 
   int indexOf(String email) {
