@@ -13,6 +13,19 @@ public class TodoController {
 
   public TodoController() throws Exception {
     System.out.println("TodoController() 호출됨!");
+
+    BufferedReader in = new BufferedReader(new FileReader("todos.csv"));
+
+    String line;
+    while ((line = in.readLine()) != null) { // 더이상 읽을 데이터가 없으면 null을 리턴한다.
+      todoList.add(Todo.valueOf(line));
+    }
+
+    in.close();
+  }
+
+  public TodoController() throws Exception {
+    System.out.println("TodoController() 호출됨!");
     com.eomcs.io.FileReader2 in = new com.eomcs.io.FileReader2("todos.csv");
 
     String line;

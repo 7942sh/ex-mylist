@@ -14,6 +14,24 @@ public class BoardController {
 
   public BoardController() throws Exception {
     System.out.println("BoardController() 호출됨!");
+
+    //1) 주 작업 객체(concrete component) 준비
+    FileReader in = new FileReader("boards.csv");
+
+    //2) 한 줄 단위로 데이터를 읽는 작업을 수행하는 데코레이터 준비
+    BufferedReader in2 = new BufferedReader(in);
+
+    String line;
+    while ((line = in2.readLine()) != null) { // 한 줄의 문자열을 읽었으면,
+      boardList.add(Board.valueOf(line));
+    }
+
+    in2.close();
+    //in.close(); // 데코레이터를 close() 하면 그 데코레이터와 연결된 객체들도 모두 close() 된다.
+  }
+
+  public BoardController() throws Exception {
+    System.out.println("BoardController() 호출됨!");
     com.eomcs.io.FileReader2 in = new com.eomcs.io.FileReader2("boards.csv");
 
     String line;

@@ -15,6 +15,20 @@ public class ContactController {
     contactList = new ArrayList();
     System.out.println("ContactController() 호출됨!");
 
+    BufferedReader in = new BufferedReader(new FileReader("contacts.csv"));
+
+    String line;
+    while ((line = in.readLine()) != null) { // readLine()이 null을 리턴한다면 파일을 다 읽었다는 것이다.
+      contactList.add(Contact.valueOf(line)); // 파일에서 읽은 한 줄의 CSV 데이터로 객체를 만든 후 목록에 등록한다.
+    }
+
+    in.close();
+  }
+
+  public ContactController() throws Exception {
+    contactList = new ArrayList();
+    System.out.println("ContactController() 호출됨!");
+
     com.eomcs.io.FileReader2 in = new com.eomcs.io.FileReader2("contacts.csv");
 
     String line;

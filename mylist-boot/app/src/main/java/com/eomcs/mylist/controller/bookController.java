@@ -13,6 +13,19 @@ public class BookController {
 
   public BookController() throws Exception {
     System.out.println("BookController() 호출됨!");
+
+    BufferedReader in = new BufferedReader(new FileReader("books.csv")); // 주 객체에 데코레이터 객체를 연결
+
+    String line;
+    while ((line = in.readLine()) != null) { // readLine()이 null을 리턴한다면 더이상 읽을 데이터가 없다는 뜻!
+      bookList.add(Book.valueOf(line));
+    }
+
+    in.close();
+  }
+
+  public BookController() throws Exception {
+    System.out.println("BookController() 호출됨!");
     com.eomcs.io.FileReader2 in = new com.eomcs.io.FileReader2("books.csv");
 
     String line;
