@@ -64,16 +64,27 @@ public class BookController {
   }
 
   @RequestMapping("/book/save")
-  public Object save() throws Exception {
-    PrintWriter out = new PrintWriter(new FileWriter("books.csv")); // 따로 경로를 지정하지 않으면 파일은 프로젝트 폴더에 생성된다.
+public Object save() throws Exception {
+  DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("books.data")));
 
-    Object[] arr = bookList.toArray();
-    for (Object obj : arr) {
-      Book book = (Book) obj;
-      out.println(book.toCsvString());
+  Object[] arr = bookList.toArray();
+
+  for (Object obj : arr) {
+    Book book = (Book) obj;
+    out.writeUTF(book.getTitle());
+    out.writeUTF(book.getAuthor());
+    out.writeUTF(book.getPress());
+    out.writeInt(book.getPage());
+    out.writeInt(book.getPrice());
+    if (book.getReadDate() == null) {
+      out.writeUTF("");
+    } else {
+      out.writeUTF(book.getReadDate().toString());
     }
-
-    out.close();
-    return arr.length;
+    out.writeUTF(book.getFeed());
   }
+
+  out.close();
+  return arr.length;
+}
 }

@@ -81,20 +81,18 @@ public class BoardController {
 
   @RequestMapping("/board/save")
   public Object save() throws Exception {
-    // 1) 주 작업 객체 준비
-    FileWriter out = new FileWriter("boards.csv"); // 따로 경로를 지정하지 않으면 파일은 프로젝트 폴더에 생성된다.
-
-    // 2) 한 줄 단위로 출력하는 데코레이터 객체 준비
-    PrintWriter out2 = new PrintWriter(out);
+    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("boards.data")));
 
     Object[] arr = boardList.toArray();
     for (Object obj : arr) {
       Board board = (Board) obj;
-      out2.println(board.toCsvString());
+      out.writeUTF(board.getTitle());
+      out.writeUTF(board.getContent());
+      out.writeInt(board.getViewCount());
+      out.writeUTF(board.getCreatedDate().toString());
     }
 
-    out2.close();
-    // out.close(); // 데코레이터에서 close()하면 그 데코레이터와 연결된 모든 객체도 자동으로 close() 한다.
+    out.close();
     return arr.length;
   }
 }

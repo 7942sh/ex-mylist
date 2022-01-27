@@ -71,16 +71,17 @@ public class TodoController {
   }
 
   @RequestMapping("/todo/save")
-  public Object save() throws Exception {
-    PrintWriter out = new PrintWriter(new FileWriter("todos.csv")); // 따로 경로를 지정하지 않으면 파일은 프로젝트 폴더에 생성된다.
+public Object save() throws Exception {
+  DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("todos.data")));
 
-    Object[] arr = todoList.toArray();
-    for (Object obj : arr) {
-      Todo todo = (Todo) obj;
-      out.println(todo.toCsvString());
-    }
+  Object[] arr = todoList.toArray();
+  for (Object obj : arr) {
+    Todo todo = (Todo) obj;
+    out.writeUTF(todo.getTitle());
+    out.writeBoolean(todo.isDone());
+  }
 
-    out.close();
-    return arr.length;
+  out.close();
+  return arr.length;
   }
 }

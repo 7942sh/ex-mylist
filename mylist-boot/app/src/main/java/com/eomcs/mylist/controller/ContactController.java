@@ -72,19 +72,22 @@ public class ContactController {
   }
 
   @RequestMapping("/contact/save")
-  public Object save() throws Exception {
+public Object save() throws Exception {
 
-    PrintWriter out = new PrintWriter(new FileWriter("contacts.csv")); // 따로 경로를 지정하지 않으면 파일은 프로젝트 폴더에 생성된다.
+  DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("contacts.data")));
 
-    Object[] arr = contactList.toArray();
-    for (Object obj : arr) {
-      Contact contact = (Contact) obj;
-      out.println(contact.toCsvString());
-    }
-
-    out.close();
-    return arr.length;
+  Object[] arr = contactList.toArray();
+  for (Object obj : arr) {
+    Contact contact = (Contact) obj;
+    out.writeUTF(contact.getName());
+    out.writeUTF(contact.getEmail());
+    out.writeUTF(contact.getTel());
+    out.writeUTF(contact.getCompany());
   }
+
+  out.close();
+  return arr.length;
+}
 
   int indexOf(String email) {
     for (int i = 0; i < contactList.size(); i++) {
