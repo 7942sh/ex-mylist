@@ -1,9 +1,11 @@
 package com.eomcs.mylist.controller;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eomcs.mylist.domain.Todo;
@@ -17,11 +19,17 @@ public class TodoController {
   public TodoController() throws Exception {
     System.out.println("TodoController() 호출됨!");
 
-    BufferedReader in = new BufferedReader(new FileReader("todos.csv"));
+    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("todos.data")));
 
-    String line;
-    while ((line = in.readLine()) != null) { // 더이상 읽을 데이터가 없으면 null을 리턴한다.
-      todoList.add(Todo.valueOf(line));
+    while (true) {
+      try {
+        Todo todo = new Todo();
+        todo.setTitle(in.readUTF());
+        todo.setDone(in.readBoolean());
+        todoList.add(todo);
+      } catch (Exception e) {
+        break;
+      }
     }
 
     in.close();
@@ -71,17 +79,17 @@ public class TodoController {
   }
 
   @RequestMapping("/todo/save")
-public Object save() throws Exception {
-  DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("todos.data")));
+  public Object save() throws Exception {
+    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("todos.data")));
 
-  Object[] arr = todoList.toArray();
-  for (Object obj : arr) {
-    Todo todo = (Todo) obj;
-    out.writeUTF(todo.getTitle());
-    out.writeBoolean(todo.isDone());
-  }
+    Object[] arr = todoList.toArray();
+    for (Object obj : arr) {
+      Todo todo = (Todo) obj;
+      out.writeUTF(todo.getTitle());
+      out.writeBoolean(todo.isDone());
+    }
 
-  out.close();
-  return arr.length;
+    out.close();
+    return arr.length;
   }
 }
