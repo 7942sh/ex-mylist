@@ -84,26 +84,9 @@ public class BookController {
 
   @RequestMapping("/book/save")
   public Object save() throws Exception {
-    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("books.data")));
-
-    Object[] arr = bookList.toArray();
-
-    for (Object obj : arr) {
-      Book book = (Book) obj;
-      out.writeUTF(book.getTitle());
-      out.writeUTF(book.getAuthor());
-      out.writeUTF(book.getPress());
-      out.writeInt(book.getPage());
-      out.writeInt(book.getPrice());
-      if (book.getReadDate() == null) {
-        out.writeUTF("");
-      } else {
-        out.writeUTF(book.getReadDate().toString());
-      }
-      out.writeUTF(book.getFeed());
-    }
-
+    ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("books.ser2")));
+    out.writeObject(bookList);
     out.close();
-    return arr.length;
+    return bookList.size();
   }
 }

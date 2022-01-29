@@ -85,20 +85,10 @@ public class ContactController {
 
   @RequestMapping("/contact/save")
   public Object save() throws Exception {
-
-    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("contacts.data")));
-
-    Object[] arr = contactList.toArray();
-    for (Object obj : arr) {
-      Contact contact = (Contact) obj;
-      out.writeUTF(contact.getName());
-      out.writeUTF(contact.getEmail());
-      out.writeUTF(contact.getTel());
-      out.writeUTF(contact.getCompany());
-    }
-
+    ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("contacts.ser2")));
+    out.writeObject(contactList);
     out.close();
-    return arr.length;
+    return contactList.size();
   }
 
   int indexOf(String email) {

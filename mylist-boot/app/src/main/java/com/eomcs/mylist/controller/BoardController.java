@@ -88,18 +88,18 @@ public class BoardController {
 
   @RequestMapping("/board/save")
   public Object save() throws Exception {
-    DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("boards.data")));
+    ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("boards.ser2")));
 
-    Object[] arr = boardList.toArray();
-    for (Object obj : arr) {
-      Board board = (Board) obj;
-      out.writeUTF(board.getTitle());
-      out.writeUTF(board.getContent());
-      out.writeInt(board.getViewCount());
-      out.writeUTF(board.getCreatedDate().toString());
-    }
+    // 1) 다음과 같이 목록에 들어 있는 객체를 한 개씩 순차적으로 serialize 할 수도 있고,
+    //    Object[] arr = boardList.toArray();
+    //    for (Object obj : arr) {
+    //      out.writeObject(obj);
+    //    }
+
+    // 2) 다음과 같이 목록 자체를 serialize 할 수 도 있다.
+    out.writeObject(boardList);
 
     out.close();
-    return arr.length;
+    return boardList.size();
   }
 }
