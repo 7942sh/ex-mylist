@@ -2,11 +2,10 @@ package com.eomcs.mylist.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.sql.Date;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eomcs.mylist.domain.Book;
@@ -20,30 +19,14 @@ public class BookController {
   public BookController() throws Exception {
     System.out.println("BookController() 호출됨!");
 
-    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("books.data")));
+    try {
+      ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("books.ser2")));
+      bookList = (ArrayList) in.readObject();
+      in.close();
 
-    while (true) {
-      try {
-        Book book = new Book();
-        book.setTitle(in.readUTF());
-        book.setAuthor(in.readUTF());
-        book.setPress(in.readUTF());
-        book.setPage(in.readInt());
-        book.setPrice(in.readInt());
-        String date = in.readUTF();
-        if (date.length() > 0) {
-          book.setReadDate(Date.valueOf(date));
-        }
-        book.setFeed(in.readUTF());
-
-        bookList.add(book);
-
-      } catch (Exception e) {
-        break;
-      }
+    } catch (Exception e) {
+      System.out.println("독서록 데이터를 로딩하는 중 오류 발생!");
     }
-
-    in.close();
   }
 
   @RequestMapping("/book/list")

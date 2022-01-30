@@ -2,10 +2,10 @@ package com.eomcs.mylist.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eomcs.mylist.domain.Contact;
@@ -20,24 +20,14 @@ public class ContactController {
     contactList = new ArrayList();
     System.out.println("ContactController() 호출됨!");
 
-    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("contacts.data")));
+    try {
+      ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("contacts.ser2")));
+      contactList = (ArrayList) in.readObject();
+      in.close();
 
-    while (true) {
-      try {
-        Contact contact = new Contact();
-        contact.setName(in.readUTF());
-        contact.setEmail(in.readUTF());
-        contact.setTel(in.readUTF());
-        contact.setCompany(in.readUTF());
-
-        contactList.add(contact);
-
-      } catch (Exception e) {
-        break;
-      }
+    } catch (Exception e) {
+      System.out.println("연락처 데이터를 로딩하는 중에 오류 발생!");
     }
-
-    in.close();
   }
 
   @RequestMapping("/contact/list")
