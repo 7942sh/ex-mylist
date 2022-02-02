@@ -1,15 +1,15 @@
 package com.eomcs.mylist.controller;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eomcs.mylist.domain.Book;
 import com.eomcs.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class BookController {
@@ -20,8 +20,16 @@ public class BookController {
     System.out.println("BookController() 호출됨!");
 
     try {
-      ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("books.ser2")));
-      bookList = (ArrayList) in.readObject();
+      BufferedReader in = new BufferedReader(new FileReader("books.json"));
+
+      ObjectMapper mapper = new ObjectMapper();
+
+      //      String jsonStr = in.readLine();
+      //      Book[] books = mapper.readValue(jsonStr, Book[].class);
+      //      bookList = new ArrayList(books);
+
+      bookList = new ArrayList(mapper.readValue(in.readLine(), Book[].class));
+
       in.close();
 
     } catch (Exception e) {
@@ -67,8 +75,11 @@ public class BookController {
 
   @RequestMapping("/book/save")
   public Object save() throws Exception {
-    ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("books.ser2")));
-    out.writeObject(bookList);
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("books.json")));
+
+    ObjectMapper mapper = new ObjectMapper();
+    out.println(mapper.writeValueAsString(bookList.toArray()));
+
     out.close();
     return bookList.size();
   }
