@@ -1,35 +1,33 @@
 package com.eomcs.mylist.dao;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.File;
 import com.eomcs.mylist.domain.Board;
 import com.eomcs.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-//@Repository
-public class SerialBoardDao implements BoardDao {
+// @Repository
+// - 클래스에 이 애노테이션을 붙여 표시해 두면, Spring Boot가 실행될 때 이 클래스의 객체를 자동 생성한다.
+// - 또한 이 객체를 원하는 곳에 자동으로 주입한다.
+//
+//@Repository  
+public class JsonBoardDao implements BoardDao {
 
-  String filename = "boards.ser";
+  String filename = "boards.json";
   ArrayList boardList = new ArrayList(); // 변수 선언 = 변수를 만들라는 명령!
 
-  public SerialBoardDao() {
+  public JsonBoardDao() {
     try {
-      ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
-      boardList = (ArrayList) in.readObject();
-      in.close();
+      ObjectMapper mapper = new ObjectMapper();
+      boardList.addAll(mapper.readValue(new File(filename), Board[].class));
+
     } catch (Exception e) {
       System.out.println("게시글 데이터 로딩 중 오류 발생!");
     }
   }
 
   private void save() throws Exception {
-    ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
-    out.writeObject(boardList);
-    out.flush();
-    out.close();
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.writeValue(new File(filename), boardList.toArray());
   }
 
   @Override
@@ -83,3 +81,14 @@ public class SerialBoardDao implements BoardDao {
     save();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
